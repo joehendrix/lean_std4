@@ -731,6 +731,17 @@ protected theorem mul_zero (k : Fin (n + 1)) : k * 0 = 0 := by simp [ext_iff, mu
 protected theorem zero_mul (k : Fin (n + 1)) : (0 : Fin (n + 1)) * k = 0 := by
   simp [ext_iff, mul_def]
 
+/-! ### getElem -/
+
+@[simp] theorem getElem_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n) (h : Dom a i) :
+    a[i] = a[i.1] := rfl
+
+@[simp] theorem getElem?_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n)
+    [Decidable (Dom a i)] : a[i]? = a[i.1]? := rfl
+
+@[simp] theorem getElem!_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n)
+    [Decidable (Dom a i)] [Inhabited Elem] : a[i]! = a[i.1]! := rfl
+
 end Fin
 
 namespace USize

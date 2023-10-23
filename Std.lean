@@ -1,6 +1,7 @@
 import Std.Classes.BEq
 import Std.Classes.Cast
 import Std.Classes.Dvd
+import Std.Classes.GetElem
 import Std.Classes.LawfulMonad
 import Std.Classes.Order
 import Std.Classes.RatCast
