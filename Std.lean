@@ -1,4 +1,3 @@
-import Std.Classes.Algebra
 import Std.Classes.BEq
 import Std.Classes.Cast
 import Std.Classes.Dvd
