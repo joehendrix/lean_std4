@@ -69,23 +69,86 @@ state; (2) use of symbolic execution to unfold large monadic
 computations while ensuring verification formulas are tractable; (3)
 addressing some foundational issues with references in `ST` and `IO`.
 
-### Primitive data types
+## Fixed width integers and C Interoperability
 
-Leah has builtin support for a variety of primitive types including
-natural numbers, unsigned fixed-width integers (e.g., `UInt8`),
-double-precision floating point numbers, `String`, arrays (including
-scalar arrays), and other types.  This builtin support improves
-efficiency over the generic object representation and can facilitate
-better interoperability between Lean and C code.
-
-The standard library and Lean should additional types to improve the
-interoperability of Lean with other languages.  In particular, Lean
-should support fixed precision *signed* integers including `Int8`,
-`Int16`, `Int32` and `Int64`.  We also aim to provide aliases from C
+The Lean compiler includes builtin support for unsigned fix-width
+integers including `UInt8`, `UInt16`, `UInt32` and `UInt64` and `USize`.
+`USize` is 32 or 64-bits depending on the platform memory address size
+(similiar to `size_t` in C).  As part of the standard library we will
+incorporate fixed precision *signed* integers including `Int8`, `Int16`,
+`Int32` and `Int64`.  We will also aim to provide aliases for C
 primitive types such as `int`, `long`, `ptrdiff_t` etc to facilitate
 Lean and C integration.
 
-### Data structures
+The datatypes will be equipped with arithmetic, comparison and bitwise
+operations along with suitable cases between types.  They will
+include lemma support and will be priorities for SAT and SMT support
+once suitable tactics are added.
+
+## Characters and strings
+
+Lean already supports for Unicode characters and strings.  The kernel
+represents a string as a list of characters while the interpreter and
+compiler use a more efficient representation as a packed C array
+containing the UTF-8 encoded representation with the length in chracters
+cached.  The standard library will add algorithms for working with
+strings including efficient string matching and regular expressions as
+well as lemmas for reasoning about offsets in the more compact
+representation.  This facilitates writing verified code that uses byte
+indices.
+
+## Floating point
+
+Lean currently has support for the IEEE double-precision floating point
+numbers -- primarily for programming use.  The standard library will
+provide additional operations as needed to support programming using
+IEEE floating point.  Comprehensive verification support for floating
+point is in scope for the standard library, but not currently a high
+priority.
+
+## Data structures
+
+The standard library will provide common data structures.  These need to
+be both performant and come with lemmas so they can be easily reasoned
+about in specifications.  Lean's runtime supports destructive updates
+when data structures are not shared, and the standard library needs to
+provide data structures suitable for both good shared and destructive
+use-cases.  Furthermore, Lean provides concurrency primitives, and the
+standard library needs to design data structures for concurrent accesses
+and updates.
+
+### Sequence-like data structures: Lists, arrays, vectors.
+
+For sequence-like structures, the standard library will provide
+additional lemma and operation support for the `List`, `Array` and
+`ByteArray` types.  It also provides a `BitVec` type for bit arrays with
+the length in the parameter, and will provide a generic `Vector` type
+for arrays with a parameter length. Beyond these planned inclusions, the
+standard library is open to including additional data structures such as
+finger-trees or sequence builder types (similiar to Haskell's
+[`ByteString.Builder](https://hackage.haskell.org/package/bytestring-0.12.0.2/docs/Data-ByteString-Builder.html)
+when efficiency can be demonstrated.
+
+For each of these sequence types, the standard library will provide
+operations for per-element access and updates as well as aggregate
+operations such as mapping over elements, folds, traversals,
+concatenation, and casting between related types.  Due to the large
+number of methods and lack of decidability, it is not feasible to
+provide lemmas for all propositions involving lists.  Instead, the
+standard library will prioritize lemmas for (1) reasoning about the
+number of elements in lists, (2) the values at particular indices, and
+(3) membership predicates.  Each time will also come equiped with
+extensionality lemmas so that equivalence between expressions returning
+arrays, lists and other sequences to the equivalence of the values at
+specific indices.  This reduces the number of lemmas needed and these
+lemmas can work well with automated-theorem proving techniques such as
+first-order logic based theorem proving.
+
+### Finite Maps and sets
+
+The standard library will also provide efficient types and operations
+for defining, modifying and evaluating both unordered and ordered finite
+maps and sets.
 
 The standard library should provide common data structured needed in
 applications including ordered-maps, hash tables, arrays, lists, tries,
@@ -96,6 +159,14 @@ the standard library needs to provide data structures suitable for both
 good shared and destructive use-cases.  Furthermore, Lean provides
 concurrency primitives, and the standard library needs to design data
 structures for concurrent accesses and updates.
+
+### Additional Data structures and algorithms
+
+In addition the above data types, the standard library will include
+priority querues and potentially other data structures and algorithsm
+such as union-find and graph algorithms.  Before submitting a PR about
+such a data structure, potential contributors should discuss the idea on
+the Lean Zulip and get feedback on the suitability.
 
 ## Asynchronous IO
 
