@@ -21,11 +21,16 @@ namespace Array
 
 attribute [simp] data_toArray uset
 
+@[simp] theorem mk_eq_toArray : @Array.mk = @List.toArray := by admit
+
+@[simp] theorem toList_data (l : List α) : l.toArray.data = l := by admit
+
+
 @[simp] theorem mkEmpty_eq (α n) : @mkEmpty α n = #[] := rfl
 
 @[simp] theorem size_toArray (as : List α) : as.toArray.size = as.length := by simp [size]
 
-@[simp] theorem size_mk (as : List α) : (Array.mk as).size = as.length := by simp [size]
+--@[simp] theorem size_mk (as : List α) : (Array.mk as).size = as.length := by simp [size]
 
 theorem getElem_eq_data_get (a : Array α) (h : i < a.size) : a[i] = a.data.get ⟨i, h⟩ := by
   by_cases i < a.size <;> (try simp [*]) <;> rfl
@@ -188,7 +193,7 @@ theorem size_mapM [Monad m] [LawfulMonad m] (f : α → m β) (as : Array α) :
   rw [map, mapM_eq_foldlM]
   apply congrArg data (foldl_eq_foldl_data (fun bs a => push bs (f a)) #[] arr) |>.trans
   have H (l arr) : List.foldl (fun bs a => push bs (f a)) arr l = ⟨arr.data ++ l.map f⟩ := by
-    induction l generalizing arr <;> simp [*]
+    induction l generalizing arr <;> simp [-mk_eq_toArray, *]
   simp [H]
 
 @[simp] theorem size_map (f : α → β) (arr : Array α) : (arr.map f).size = arr.size := by

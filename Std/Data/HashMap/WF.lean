@@ -41,7 +41,7 @@ theorem WF.mk' [BEq α] [Hashable α] (h) : (Buckets.mk n h : Buckets α β).WF 
   refine ⟨fun _ h => ?_, fun i h => ?_⟩
   · simp [Buckets.mk, empty', mkArray, List.mem_replicate] at h
     simp [h, List.Pairwise.nil]
-  · simp [Buckets.mk, empty', mkArray, Array.getElem_eq_data_get, AssocList.All]
+  · simp [-Array.mk_eq_toArray, Buckets.mk, empty', mkArray, Array.getElem_eq_data_get, AssocList.All]
 
 theorem WF.update [BEq α] [Hashable α] {buckets : Buckets α β} {i d h} (H : buckets.WF)
     (h₁ : ∀ [PartialEquivBEq α] [LawfulHashable α],
